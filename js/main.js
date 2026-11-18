@@ -1,5 +1,5 @@
 /* ==========================================================
-   Les Petits Codeurs — scripts du site
+   Clic & Avenir — scripts du site
    ========================================================== */
 
 /* ---------- Menu mobile ---------- */
@@ -32,267 +32,358 @@ function afficherMessage(el, texte, type) {
 }
 
 /* ==========================================================
-   Jeu 1 : les cartes binaires
+   Contenu des quiz
+   bonne = numéro de la bonne réponse (0 = la première)
    ========================================================== */
-(function jeuBinaire() {
-  const valeurs = [16, 8, 4, 2, 1];
-  const conteneur = document.getElementById("bin-cartes");
-  const cibleEl = document.getElementById("bin-cible");
-  const totalEl = document.getElementById("bin-total");
-  const codeEl = document.getElementById("bin-code");
-  const messageEl = document.getElementById("bin-message");
-  let cible = 0;
-  const etat = valeurs.map(() => false);
+const VF = ["Vrai", "Faux"];
+const QUIZ = {
+  cv: [
+    {
+      q: "Pour un premier CV, combien de pages faut-il viser ?",
+      choix: ["Une seule page", "Trois pages minimum", "Pas de limite, plus c'est long mieux c'est"],
+      bonne: 0,
+      explication: "Un recruteur passe en moyenne moins d'une minute sur un CV : une page claire suffit largement.",
+    },
+    {
+      q: "Si je mets une photo, laquelle choisir ?",
+      choix: ["Un selfie avec un filtre sympa", "Une photo neutre, souriante, sur fond uni", "Une photo de soirée avec mes amis"],
+      bonne: 1,
+      explication: "La photo n'est pas obligatoire en France. Si tu en mets une, elle doit être sobre et professionnelle.",
+    },
+    {
+      q: "Dans la rubrique « Expériences », je commence par…",
+      choix: ["La plus ancienne", "La plus récente", "Peu importe l'ordre"],
+      bonne: 1,
+      explication: "On classe de la plus récente à la plus ancienne : c'est ce que le recruteur veut voir en premier.",
+    },
+    {
+      q: "Mon stage de 3e, du baby-sitting ou du bénévolat, je les mets sur mon CV ?",
+      choix: ["Non, ce ne sont pas de vraies expériences", "Oui, ça montre ce que je sais faire"],
+      bonne: 1,
+      explication: "Toute expérience compte ! Elle montre ton sérieux, ta ponctualité, ton sens des responsabilités…",
+    },
+    {
+      q: "Sous quel format envoyer mon CV ?",
+      choix: ["Une photo du CV prise avec mon téléphone", "En PDF, nommé « CV_Prenom_Nom.pdf »", "Peu importe"],
+      bonne: 1,
+      explication: "Le PDF garde ta mise en page intacte sur tous les ordinateurs. Un nom de fichier clair aide le recruteur.",
+    },
+    {
+      q: "Quelques fautes d'orthographe sur un CV, c'est grave ?",
+      choix: ["Non, personne ne fait attention", "Oui : je me relis et je fais relire"],
+      bonne: 1,
+      explication: "Les fautes donnent une impression de négligence. Utilise le correcteur et demande à quelqu'un de relire.",
+    },
+  ],
+  mail: [
+    {
+      q: "Quelle adresse choisir pour envoyer une candidature ?",
+      choix: ["bg-du-93@mail.fr", "sarah.martin@mail.fr", "lapetiteprincesse2008@mail.fr"],
+      bonne: 1,
+      explication: "Prénom + nom : c'est simple, sérieux, et le recruteur sait tout de suite qui tu es.",
+    },
+    {
+      q: "Quel objet écrire dans le mail ?",
+      choix: ["(rien, je laisse vide)", "slt", "Candidature – Poste de vendeur – Sarah Martin"],
+      bonne: 2,
+      explication: "L'objet doit dire en une ligne pourquoi tu écris. Un mail sans objet risque de finir dans les spams.",
+    },
+    {
+      q: "Comment commencer le mail ?",
+      choix: ["Wesh !", "Coucou,", "Bonjour Madame, Monsieur,"],
+      bonne: 2,
+      explication: "On reste poli et formel. Si tu connais le nom de la personne : « Bonjour Madame Dupont, ».",
+    },
+    {
+      q: "J'écris mon mail tout en MAJUSCULES pour montrer ma motivation.",
+      choix: ["Bonne idée", "Mauvaise idée"],
+      bonne: 1,
+      explication: "Sur Internet, les majuscules donnent l'impression de crier. On écrit normalement.",
+    },
+    {
+      q: "Je mets mon CV en pièce jointe. Que j'écris dans le corps du mail ?",
+      choix: ["Rien, tout est dans le CV", "Quelques lignes pour me présenter et dire ce que je cherche"],
+      bonne: 1,
+      explication: "Un mail vide fait peu sérieux. Quelques phrases polies suffisent, puis une formule de fin et ta signature.",
+    },
+    {
+      q: "Avant de cliquer sur « Envoyer », je vérifie…",
+      choix: ["Que la pièce jointe est bien là", "L'orthographe et l'adresse du destinataire", "Les deux !"],
+      bonne: 2,
+      explication: "L'oubli de pièce jointe est l'erreur la plus fréquente. Un dernier coup d'œil évite bien des soucis.",
+    },
+  ],
+  reseaux: [
+    {
+      q: "Une photo que j'ai publiée peut être supprimée définitivement d'Internet.",
+      choix: VF,
+      bonne: 1,
+      explication: "Même supprimée, elle a pu être copiée ou capturée. Réfléchis avant de publier !",
+    },
+    {
+      q: "Un recruteur peut regarder mes réseaux sociaux avant de m'embaucher.",
+      choix: VF,
+      bonne: 0,
+      explication: "C'est très courant. Pense à vérifier ce qui est public sur tes profils : c'est ton e-réputation.",
+    },
+    {
+      q: "Une information partagée des milliers de fois est forcément vraie.",
+      choix: VF,
+      bonne: 1,
+      explication: "Les fausses infos circulent souvent plus vite que les vraies. Vérifie la source et croise avec des médias fiables.",
+    },
+    {
+      q: "Je peux publier la photo d'un ami sans lui demander son accord.",
+      choix: VF,
+      bonne: 1,
+      explication: "C'est le droit à l'image : chacun doit donner son accord avant qu'on publie une photo de lui.",
+    },
+    {
+      q: "Le cyberharcèlement est puni par la loi.",
+      choix: VF,
+      bonne: 0,
+      explication: "Oui. Si tu en es victime ou témoin, parles-en : le 3018 est un numéro gratuit et anonyme.",
+    },
+    {
+      q: "Utiliser le même mot de passe partout, c'est pratique et sans risque.",
+      choix: VF,
+      bonne: 1,
+      explication: "Si un seul site se fait pirater, tous tes comptes sont en danger. Un mot de passe différent par compte !",
+    },
+    {
+      q: "Les réseaux sociaux me montrent surtout ce qui me fait réagir, pour que je reste connecté·e.",
+      choix: VF,
+      bonne: 0,
+      explication: "Les algorithmes choisissent ce que tu vois. Varie tes sources pour ne pas rester dans une « bulle ».",
+    },
+  ],
+  culture: [
+    {
+      q: "Qui a peint La Joconde ?",
+      choix: ["Pablo Picasso", "Léonard de Vinci", "Claude Monet"],
+      bonne: 1,
+      explication: "Peinte au début du XVIe siècle, elle est exposée au musée du Louvre, à Paris.",
+    },
+    {
+      q: "Qui a peint La Nuit étoilée, avec son ciel en tourbillons ?",
+      choix: ["Vincent van Gogh", "Salvador Dalí", "Rembrandt"],
+      bonne: 0,
+      explication: "Van Gogh l'a peinte en 1889. Son style aux couleurs vives et aux touches épaisses est reconnaissable entre mille.",
+    },
+    {
+      q: "Le Penseur est une célèbre sculpture de…",
+      choix: ["Michel-Ange", "Camille Claudel", "Auguste Rodin"],
+      bonne: 2,
+      explication: "On peut l'admirer au musée Rodin, à Paris. Camille Claudel, elle aussi grande sculptrice, fut son élève.",
+    },
+    {
+      q: "Qui a peint la série des Nymphéas ?",
+      choix: ["Claude Monet", "Gustave Courbet", "Henri Matisse"],
+      bonne: 0,
+      explication: "Monet est l'un des pères de l'impressionnisme. Ses Nymphéas géants sont au musée de l'Orangerie, à Paris.",
+    },
+    {
+      q: "Quel peintre a réalisé La Liberté guidant le peuple (1830) ?",
+      choix: ["Jacques-Louis David", "Eugène Delacroix", "Théodore Géricault"],
+      bonne: 1,
+      explication: "Delacroix y représente la révolution de juillet 1830. Le tableau est au Louvre.",
+    },
+    {
+      q: "Le street art (graffitis, fresques, collages) peut être exposé dans des musées.",
+      choix: VF,
+      bonne: 0,
+      explication: "Oui ! Des artistes comme Banksy ou le Français JR sont exposés dans le monde entier.",
+    },
+    {
+      q: "En France, les musées nationaux sont gratuits pour les moins de 26 ans résidant dans l'Union européenne.",
+      choix: VF,
+      bonne: 0,
+      explication: "Profites-en : le Louvre, Orsay, le château de Versailles… sont gratuits pour toi (sur présentation d'une pièce d'identité).",
+    },
+  ],
+};
 
-  valeurs.forEach((v, i) => {
-    const carte = document.createElement("button");
-    carte.className = "carte-bin";
-    carte.setAttribute("aria-label", "Carte " + v);
-    carte.innerHTML = `<span class="points">${"●".repeat(v)}</span><span class="valeur">${v}</span>`;
-    carte.addEventListener("click", () => {
-      etat[i] = !etat[i];
-      carte.classList.toggle("retournee", etat[i]);
-      mettreAJour();
+/* ==========================================================
+   Moteur de quiz
+   ========================================================== */
+function lancerQuiz(conteneur, questions) {
+  let index = 0;
+  let score = 0;
+
+  function afficherQuestion() {
+    const { q, choix } = questions[index];
+    conteneur.innerHTML = `
+      <p class="quiz-progression">Question ${index + 1} / ${questions.length} · Score : ${score}</p>
+      <p class="quiz-question">${q}</p>
+      <div class="quiz-choix">${choix.map((c, i) => `<button class="choix" data-i="${i}">${c}</button>`).join("")}</div>
+      <div class="quiz-suite"></div>`;
+    conteneur.querySelectorAll(".choix").forEach((b) => b.addEventListener("click", () => repondre(Number(b.dataset.i))));
+  }
+
+  function repondre(i) {
+    const { bonne, explication } = questions[index];
+    const boutons = conteneur.querySelectorAll(".choix");
+    boutons.forEach((b) => (b.disabled = true));
+    boutons[bonne].classList.add("juste");
+    if (i === bonne) score++;
+    else boutons[i].classList.add("faux");
+
+    const suite = conteneur.querySelector(".quiz-suite");
+    const derniere = index === questions.length - 1;
+    suite.innerHTML = `
+      <p class="explication">${i === bonne ? "✅ Bien vu ! " : "❌ Raté… "}${explication}</p>
+      <button class="btn btn-principal">${derniere ? "Voir mon score" : "Question suivante →"}</button>`;
+    suite.querySelector("button").addEventListener("click", () => {
+      if (derniere) afficherFin();
+      else { index++; afficherQuestion(); }
     });
-    conteneur.appendChild(carte);
+  }
+
+  function afficherFin() {
+    const ratio = score / questions.length;
+    const bilan =
+      ratio === 1 ? "Parfait, tu es un·e expert·e ! 🏆" :
+      ratio >= 0.6 ? "Très bien, tu as les bons réflexes ! 👏" :
+      "Pas mal ! L'atelier t'aidera à aller plus loin. 💪";
+    conteneur.innerHTML = `
+      <p class="quiz-fin">Ton score : ${score} / ${questions.length}</p>
+      <p>${bilan}</p>
+      <button class="btn btn-secondaire">Recommencer</button>`;
+    conteneur.querySelector("button").addEventListener("click", () => {
+      index = 0; score = 0; afficherQuestion();
+    });
+  }
+
+  afficherQuestion();
+}
+
+document.querySelectorAll(".quiz").forEach((el) => lancerQuiz(el, QUIZ[el.dataset.quiz]));
+
+/* ==========================================================
+   Outils mail : vérificateur et générateur d'adresse
+   ========================================================== */
+(function outilsMail() {
+  const champ = document.getElementById("mail-test");
+  const verdict = document.getElementById("mail-verdict");
+  const MOTS_A_EVITER = [
+    "bg", "bb", "bebe", "love", "lol", "mdr", "ptdr", "sexy", "boss", "beau", "belle", "princesse",
+    "prince", "chou", "cherie", "gangster", "killer", "ange", "diable", "kiss", "xx", "swag", "babe",
+    "darkk", "gamer", "pgm", "coeur", "doudou", "loulou", "minou", "titi", "chaton", "bogoss", "miss",
+  ];
+
+  champ.addEventListener("input", () => {
+    const adresse = champ.value.trim();
+    verdict.innerHTML = "";
+    if (!adresse) return;
+
+    const remarques = [];
+    const ok = (t) => remarques.push(["bien", "✅ " + t]);
+    const ko = (t) => remarques.push(["attention", "⚠️ " + t]);
+
+    if (!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(adresse)) {
+      ko("Ce n'est pas encore une adresse complète (forme attendue : nom@fournisseur.fr).");
+    } else {
+      const local = adresse.split("@")[0];
+      const minuscule = local.toLowerCase();
+      const mots = minuscule.split(/[._\-0-9]+/);
+      const motsTrouves = MOTS_A_EVITER.filter((m) => mots.includes(m) || (m.length > 3 && minuscule.includes(m)));
+
+      if (motsTrouves.length) ko(`Évite les surnoms et les mots familiers (« ${motsTrouves.join(", ")} »).`);
+      if ((local.match(/\d/g) || []).length > 2) ko("Trop de chiffres : évite ta date de naissance ou ton code postal.");
+      if (/[A-Z]/.test(local)) ko("Préfère les minuscules, c'est plus facile à recopier.");
+      if (local.length > 30) ko("Adresse trop longue : difficile à retenir et à recopier.");
+      if (/[._-]{2,}/.test(local)) ko("Évite les symboles à la suite (.. ou __).");
+      if (!/[.\-]/.test(local)) ko("Astuce : sépare ton prénom et ton nom par un point (prenom.nom).");
+
+      if (!remarques.length) ok("Cette adresse a l'air professionnelle, bravo !");
+    }
+    verdict.innerHTML = remarques.map(([c, t]) => `<li class="${c}">${t}</li>`).join("");
   });
 
-  function mettreAJour() {
-    const total = valeurs.reduce((s, v, i) => s + (etat[i] ? v : 0), 0);
-    totalEl.textContent = total;
-    codeEl.textContent = etat.map((b) => (b ? "1" : "0")).join("");
-    if (total === cible) {
-      afficherMessage(messageEl, `Bravo ! ${cible} s'écrit ${codeEl.textContent} en binaire 🎉`, "bravo");
-    } else if (total > cible) {
-      afficherMessage(messageEl, "Trop grand ! Retourne une carte.", "oups");
-    } else {
-      afficherMessage(messageEl, "");
-    }
-  }
+  const prenomEl = document.getElementById("mail-prenom");
+  const nomEl = document.getElementById("mail-nom");
+  const suggestions = document.getElementById("mail-suggestions");
+  const nettoyer = (t) =>
+    t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim()
+      .replace(/[^a-z\s-]/g, "").replace(/\s+/g, "-");
 
-  function nouveau() {
-    let n;
-    do { n = 1 + Math.floor(Math.random() * 31); } while (n === cible);
-    cible = n;
-    cibleEl.textContent = cible;
-    etat.fill(false);
-    conteneur.querySelectorAll(".carte-bin").forEach((c) => c.classList.remove("retournee"));
-    mettreAJour();
+  function proposer() {
+    const p = nettoyer(prenomEl.value);
+    const n = nettoyer(nomEl.value);
+    if (!p || !n) { suggestions.innerHTML = ""; return; }
+    const domaine = "@fournisseur.fr";
+    const idees = [`${p}.${n}`, `${p}-${n}`, `${p[0]}.${n}`, `${n}.${p}`];
+    suggestions.innerHTML =
+      idees.map((i) => `<li>${i}${domaine}</li>`).join("") +
+      '<li class="note-fournisseur">Remplace « fournisseur.fr » par Gmail, Outlook, Laposte…</li>';
   }
-
-  document.getElementById("bin-nouveau").addEventListener("click", nouveau);
-  nouveau();
+  prenomEl.addEventListener("input", proposer);
+  nomEl.addEventListener("input", proposer);
 })();
 
 /* ==========================================================
-   Jeu 2 : guide le robot
-   R = robot, * = étoile, # = mur, . = vide
+   Jeu : remets la lettre de motivation dans l'ordre
    ========================================================== */
-(function jeuRobot() {
-  const niveaux = [
-    [
-      "......",
-      ".R..*.",
-      "......",
-      "......",
-      "......",
-      "......",
-    ],
-    [
-      "R.#...",
-      "..#...",
-      "..#.*.",
-      "..#...",
-      "......",
-      "......",
-    ],
-    [
-      "R#....",
-      ".#.##*",
-      ".#..#.",
-      ".##.#.",
-      "....#.",
-      "###...",
-    ],
+(function jeuLettre() {
+  const BLOCS = [
+    "Sarah Martin · 12 rue des Lilas · sarah.martin@mail.fr · 06 00 00 00 00",
+    "Objet : Candidature au poste de vendeuse",
+    "Madame, Monsieur,",
+    "« Vous » — Votre magasin est reconnu pour la qualité de son accueil et de ses conseils, des valeurs qui me tiennent à cœur.",
+    "« Moi » — Lors de mon stage dans une boulangerie, j'ai appris à accueillir les clients, tenir la caisse et travailler en équipe.",
+    "« Nous » — Je serais ravie de vous rencontrer lors d'un entretien pour vous montrer ma motivation.",
+    "Je vous prie d'agréer, Madame, Monsieur, l'expression de mes salutations distinguées.",
+    "Sarah Martin",
   ];
-  const directions = {
-    haut: { dl: -1, dc: 0, icone: "⬆️" },
-    bas: { dl: 1, dc: 0, icone: "⬇️" },
-    gauche: { dl: 0, dc: -1, icone: "⬅️" },
-    droite: { dl: 0, dc: 1, icone: "➡️" },
-  };
-  const MAX_INSTRUCTIONS = 30;
+  const liste = document.getElementById("lettre-blocs");
+  const messageEl = document.getElementById("lettre-message");
+  let ordre = [];
 
-  const grilleEl = document.getElementById("robot-grille");
-  const programmeEl = document.getElementById("robot-programme");
-  const messageEl = document.getElementById("robot-message");
-  const niveauEl = document.getElementById("robot-niveau");
-  const btnLancer = document.getElementById("robot-lancer");
-
-  let niveau = 0;
-  let carte, depart, robot, etoile;
-  let programme = [];
-  let enCours = false;
-
-  function chargerNiveau() {
-    carte = niveaux[niveau].map((ligne) => ligne.split(""));
-    carte.forEach((ligne, l) =>
-      ligne.forEach((c, col) => {
-        if (c === "R") depart = { l, c: col };
-        if (c === "*") etoile = { l, c: col };
-      })
-    );
-    robot = { ...depart };
-    programme = [];
-    niveauEl.textContent = niveau + 1;
+  function melanger() {
+    do {
+      ordre = BLOCS.map((_, i) => i);
+      for (let i = ordre.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [ordre[i], ordre[j]] = [ordre[j], ordre[i]];
+      }
+    } while (ordre.every((v, i) => v === i));
     afficherMessage(messageEl, "");
-    dessinerGrille();
-    dessinerProgramme();
+    dessiner();
   }
 
-  function dessinerGrille() {
-    grilleEl.innerHTML = "";
-    carte.forEach((ligne, l) =>
-      ligne.forEach((c, col) => {
-        const caseEl = document.createElement("div");
-        caseEl.className = "case" + (c === "#" ? " mur" : "");
-        if (robot.l === l && robot.c === col) caseEl.textContent = "🤖";
-        else if (etoile.l === l && etoile.c === col) caseEl.textContent = "⭐";
-        else if (c === "#") caseEl.textContent = "🧱";
-        grilleEl.appendChild(caseEl);
-      })
-    );
+  function dessiner(corrige = false) {
+    liste.innerHTML = ordre.map((b, pos) => `
+      <li class="bloc-lettre${corrige ? (b === pos ? " bien-place" : " mal-place") : ""}">
+        <span class="fleches">
+          <button data-pos="${pos}" data-sens="-1" aria-label="Monter" ${pos === 0 ? "disabled" : ""}>▲</button>
+          <button data-pos="${pos}" data-sens="1" aria-label="Descendre" ${pos === ordre.length - 1 ? "disabled" : ""}>▼</button>
+        </span>
+        <p>${BLOCS[b]}</p>
+      </li>`).join("");
   }
 
-  function dessinerProgramme(courante = -1) {
-    if (programme.length === 0) {
-      programmeEl.innerHTML = '<span class="vide">Clique sur les flèches…</span>';
-      return;
-    }
-    programmeEl.innerHTML = programme
-      .map((cmd, i) => `<span class="etape${i === courante ? " courante" : ""}">${directions[cmd].icone}</span>`)
-      .join("");
-  }
-
-  document.querySelectorAll(".cmd").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      if (enCours || programme.length >= MAX_INSTRUCTIONS) return;
-      programme.push(btn.dataset.cmd);
-      dessinerProgramme();
-    });
+  liste.addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+    const pos = Number(btn.dataset.pos);
+    const cible = pos + Number(btn.dataset.sens);
+    [ordre[pos], ordre[cible]] = [ordre[cible], ordre[pos]];
+    afficherMessage(messageEl, "");
+    dessiner();
   });
 
-  document.getElementById("robot-effacer").addEventListener("click", () => {
-    if (enCours) return;
-    programme = [];
-    robot = { ...depart };
-    afficherMessage(messageEl, "");
-    dessinerGrille();
-    dessinerProgramme();
-  });
-
-  const pause = (ms) => new Promise((r) => setTimeout(r, ms));
-
-  btnLancer.addEventListener("click", async () => {
-    if (enCours || programme.length === 0) return;
-    enCours = true;
-    btnLancer.disabled = true;
-    robot = { ...depart };
-    afficherMessage(messageEl, "Le robot exécute ton programme…");
-    dessinerGrille();
-
-    let probleme = null;
-    for (let i = 0; i < programme.length; i++) {
-      dessinerProgramme(i);
-      await pause(400);
-      const d = directions[programme[i]];
-      const l = robot.l + d.dl;
-      const c = robot.c + d.dc;
-      if (l < 0 || l >= carte.length || c < 0 || c >= carte[0].length) {
-        probleme = "Oups, le robot est sorti de la grille ! 🐛 Trouve le bug et réessaie.";
-        break;
-      }
-      if (carte[l][c] === "#") {
-        probleme = "Bong ! Le robot s'est cogné dans un mur. 🐛 Corrige ton programme.";
-        break;
-      }
-      robot = { l, c };
-      dessinerGrille();
-    }
-    dessinerProgramme();
-
-    if (probleme) {
-      afficherMessage(messageEl, probleme, "oups");
-    } else if (robot.l === etoile.l && robot.c === etoile.c) {
-      if (niveau < niveaux.length - 1) {
-        afficherMessage(messageEl, "Bravo, étoile attrapée ! ⭐ Niveau suivant…", "bravo");
-        await pause(1500);
-        niveau++;
-        chargerNiveau();
-      } else {
-        afficherMessage(messageEl, "Incroyable, tu as fini tous les niveaux ! 🏆 Tu es un vrai programmeur.", "bravo");
-      }
+  document.getElementById("lettre-verifier").addEventListener("click", () => {
+    const bienPlaces = ordre.filter((b, pos) => b === pos).length;
+    dessiner(true);
+    if (bienPlaces === BLOCS.length) {
+      afficherMessage(messageEl, "Bravo, ta lettre est parfaitement construite ! 🎉", "bravo");
     } else {
-      afficherMessage(messageEl, "Le programme est fini, mais le robot n'est pas sur l'étoile. Encore un effort !", "oups");
+      afficherMessage(messageEl, `${bienPlaces} / ${BLOCS.length} blocs bien placés. Les blocs en rose sont à déplacer.`, "oups");
     }
-    enCours = false;
-    btnLancer.disabled = false;
   });
+  document.getElementById("lettre-melanger").addEventListener("click", melanger);
 
-  chargerNiveau();
-})();
-
-/* ==========================================================
-   Jeu 3 : dessine avec des nombres
-   ========================================================== */
-(function jeuPixels() {
-  const TAILLE = 8;
-  const grilleEl = document.getElementById("pixels-grille");
-  const codeEl = document.getElementById("pixels-code");
-  const pixels = Array.from({ length: TAILLE }, () => Array(TAILLE).fill(0));
-  const modele = [
-    "01100110",
-    "11111111",
-    "11111111",
-    "11111111",
-    "01111110",
-    "00111100",
-    "00011000",
-    "00000000",
-  ];
-
-  const boutons = [];
-  for (let l = 0; l < TAILLE; l++) {
-    for (let c = 0; c < TAILLE; c++) {
-      const b = document.createElement("button");
-      b.className = "pixel";
-      b.setAttribute("aria-label", `Pixel ligne ${l + 1}, colonne ${c + 1}`);
-      b.addEventListener("click", () => {
-        pixels[l][c] = pixels[l][c] ? 0 : 1;
-        rafraichir();
-      });
-      grilleEl.appendChild(b);
-      boutons.push(b);
-    }
-  }
-
-  function rafraichir() {
-    pixels.forEach((ligne, l) =>
-      ligne.forEach((v, c) => boutons[l * TAILLE + c].classList.toggle("allume", v === 1))
-    );
-    codeEl.textContent = pixels.map((ligne) => ligne.join("")).join("\n");
-  }
-
-  document.getElementById("pixels-effacer").addEventListener("click", () => {
-    pixels.forEach((ligne) => ligne.fill(0));
-    rafraichir();
-  });
-  document.getElementById("pixels-modele").addEventListener("click", () => {
-    modele.forEach((ligne, l) => ligne.split("").forEach((v, c) => (pixels[l][c] = Number(v))));
-    rafraichir();
-  });
-
-  rafraichir();
+  melanger();
 })();
 
 /* ==========================================================
@@ -303,7 +394,7 @@ document.getElementById("form-inscription").addEventListener("submit", (e) => {
   const prenom = e.target.prenom.value.trim();
   afficherMessage(
     document.getElementById("form-message"),
-    `Merci ! La demande pour ${prenom} est bien notée. (Démo : l'envoi réel reste à brancher.)`,
+    `Merci ${prenom} ! Ta demande est bien notée. (Démo : l'envoi réel reste à brancher.)`,
     "bravo"
   );
   e.target.reset();
