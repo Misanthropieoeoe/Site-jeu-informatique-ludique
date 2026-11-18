@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Les Petits Codeurs — Atelier ludique d'initiation à l'informatique</title>
+  <meta name="description" content="Atelier ludique pour faire découvrir l'informatique aux jeunes : binaire, algorithmes, pixels et sécurité sur Internet, en s'amusant.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="entete">
+    <nav class="nav">
+      <a href="#accueil" class="logo">🤖 Les Petits Codeurs</a>
+      <button class="menu-btn" aria-label="Ouvrir le menu" aria-expanded="false">☰</button>
+      <ul class="menu">
+        <li><a href="#atelier">L'atelier</a></li>
+        <li><a href="#modules">Programme</a></li>
+        <li><a href="#jeux">Mini-jeux</a></li>
+        <li><a href="#infos">Infos pratiques</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ACCUEIL -->
+    <section id="accueil" class="hero">
+      <div class="hero-texte">
+        <h1>Découvre l'informatique <span class="surligne">en jouant&nbsp;!</span></h1>
+        <p>Un atelier pour les 8–14 ans où l'on apprend comment pensent les ordinateurs, avec des jeux, des énigmes et des défis à relever en équipe.</p>
+        <div class="boutons">
+          <a href="#jeux" class="btn btn-principal">Jouer maintenant 🎮</a>
+          <a href="#infos" class="btn btn-secondaire">S'inscrire</a>
+        </div>
+      </div>
+      <div class="hero-deco" aria-hidden="true">
+        <div class="ecran">
+          <span class="code">01001000 01101001 👋</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- L'ATELIER -->
+    <section id="atelier" class="section">
+      <h2>C'est quoi, l'atelier&nbsp;?</h2>
+      <div class="cartes cartes-3">
+        <article class="carte">
+          <div class="icone">🧩</div>
+          <h3>On apprend en jouant</h3>
+          <p>Pas de cours magistral : chaque notion est découverte à travers un jeu, une énigme ou une activité manuelle.</p>
+        </article>
+        <article class="carte">
+          <div class="icone">👫</div>
+          <h3>En équipe</h3>
+          <p>Les jeunes coopèrent, s'entraident et expliquent leurs idées aux autres. On apprend mieux ensemble&nbsp;!</p>
+        </article>
+        <article class="carte">
+          <div class="icone">🚀</div>
+          <h3>Aucun prérequis</h3>
+          <p>Pas besoin de savoir programmer ni d'avoir un ordinateur à la maison. La curiosité suffit.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- PROGRAMME -->
+    <section id="modules" class="section section-couleur">
+      <h2>Le programme</h2>
+      <p class="intro">Quatre séances pour faire le tour des grandes idées de l'informatique.</p>
+      <ol class="modules">
+        <li class="module">
+          <span class="num">1</span>
+          <div>
+            <h3>Le langage secret des ordinateurs</h3>
+            <p>Comprendre le binaire : comment tout s'écrit avec des 0 et des 1.</p>
+          </div>
+        </li>
+        <li class="module">
+          <span class="num">2</span>
+          <div>
+            <h3>Donner des ordres à un robot</h3>
+            <p>Les algorithmes : écrire des instructions précises, les tester et corriger les « bugs ».</p>
+          </div>
+        </li>
+        <li class="module">
+          <span class="num">3</span>
+          <div>
+            <h3>Les images, c'est des nombres</h3>
+            <p>Pixels et couleurs : comment un écran affiche une image.</p>
+          </div>
+        </li>
+        <li class="module">
+          <span class="num">4</span>
+          <div>
+            <h3>Super-héros d'Internet</h3>
+            <p>Mots de passe, données personnelles et bons réflexes pour naviguer en sécurité.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- MINI-JEUX -->
+    <section id="jeux" class="section">
+      <h2>Les mini-jeux</h2>
+      <p class="intro">Entraîne-toi ici avant (ou après) l'atelier&nbsp;!</p>
+
+      <div class="onglets" role="tablist">
+        <button class="onglet actif" role="tab" aria-selected="true" data-jeu="binaire">🔢 Binaire</button>
+        <button class="onglet" role="tab" aria-selected="false" data-jeu="robot">🤖 Robot</button>
+        <button class="onglet" role="tab" aria-selected="false" data-jeu="pixels">🎨 Pixels</button>
+      </div>
+
+      <!-- Jeu 1 : binaire -->
+      <div class="jeu actif" id="jeu-binaire" role="tabpanel">
+        <h3>Les cartes binaires</h3>
+        <p>Retourne les cartes pour obtenir le nombre demandé. Chaque carte retournée vaut un <strong>1</strong>, chaque carte cachée un <strong>0</strong>.</p>
+        <p class="objectif">Objectif : <span id="bin-cible">?</span></p>
+        <div class="cartes-binaires" id="bin-cartes"></div>
+        <p class="resultat">Total : <strong id="bin-total">0</strong> — En binaire : <code id="bin-code">00000</code></p>
+        <p class="message" id="bin-message" aria-live="polite"></p>
+        <button class="btn btn-principal" id="bin-nouveau">Nouveau nombre</button>
+      </div>
+
+      <!-- Jeu 2 : robot -->
+      <div class="jeu" id="jeu-robot" role="tabpanel" hidden>
+        <h3>Guide le robot jusqu'à l'étoile</h3>
+        <p>Construis ton programme avec les flèches, puis lance-le. Attention aux murs&nbsp;!</p>
+        <div class="robot-zone">
+          <div class="grille" id="robot-grille"></div>
+          <div class="robot-commandes">
+            <div class="palette">
+              <button class="cmd" data-cmd="haut" aria-label="Haut">⬆️</button>
+              <button class="cmd" data-cmd="gauche" aria-label="Gauche">⬅️</button>
+              <button class="cmd" data-cmd="droite" aria-label="Droite">➡️</button>
+              <button class="cmd" data-cmd="bas" aria-label="Bas">⬇️</button>
+            </div>
+            <p>Mon programme :</p>
+            <div class="programme" id="robot-programme"><span class="vide">Clique sur les flèches…</span></div>
+            <div class="boutons">
+              <button class="btn btn-principal" id="robot-lancer">▶ Lancer</button>
+              <button class="btn btn-secondaire" id="robot-effacer">Effacer</button>
+            </div>
+            <p class="message" id="robot-message" aria-live="polite"></p>
+            <p class="niveau">Niveau <span id="robot-niveau">1</span>/3</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Jeu 3 : pixels -->
+      <div class="jeu" id="jeu-pixels" role="tabpanel" hidden>
+        <h3>Dessine avec des nombres</h3>
+        <p>Clique sur les cases pour les colorier. Regarde à droite : pour l'ordinateur, ton dessin n'est qu'une liste de 0 et de 1&nbsp;!</p>
+        <div class="pixels-zone">
+          <div class="grille-pixels" id="pixels-grille"></div>
+          <pre class="pixels-code" id="pixels-code" aria-label="Code du dessin"></pre>
+        </div>
+        <div class="boutons">
+          <button class="btn btn-secondaire" id="pixels-effacer">Tout effacer</button>
+          <button class="btn btn-secondaire" id="pixels-modele">Montre-moi un exemple</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- INFOS PRATIQUES -->
+    <section id="infos" class="section section-couleur">
+      <h2>Infos pratiques</h2>
+      <div class="cartes cartes-2">
+        <article class="carte">
+          <h3>📅 Quand et où&nbsp;?</h3>
+          <ul class="liste">
+            <li><strong>Public :</strong> 8 à 14 ans</li>
+            <li><strong>Durée :</strong> 4 séances de 1h30</li>
+            <li><strong>Lieu :</strong> <em>à compléter</em></li>
+            <li><strong>Dates :</strong> <em>à compléter</em></li>
+            <li><strong>Tarif :</strong> <em>à compléter</em></li>
+          </ul>
+        </article>
+        <article class="carte">
+          <h3>✉️ Pré-inscription</h3>
+          <form class="formulaire" id="form-inscription">
+            <label>Prénom du jeune <input type="text" name="prenom" required></label>
+            <label>Âge <input type="number" name="age" min="6" max="18" required></label>
+            <label>E-mail du parent <input type="email" name="email" required></label>
+            <button class="btn btn-principal" type="submit">Envoyer</button>
+            <p class="message" id="form-message" aria-live="polite"></p>
+          </form>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pied">
+    <p>Les Petits Codeurs — Atelier d'initiation à l'informatique · Fait avec ❤️ et beaucoup de 0 et de 1</p>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
