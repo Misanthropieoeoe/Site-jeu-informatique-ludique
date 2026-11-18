@@ -1,0 +1,179 @@
+/* ==========================================================
+   Créateur de CV
+   ========================================================== */
+.atelier-cv { max-width: 1400px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+.cv-titre { text-align: center; margin-bottom: 1.5rem; }
+.cv-titre h1 { margin: 0 0 .3rem; font-size: 2.2rem; }
+.cv-titre p { color: var(--texte-doux); margin: 0; }
+
+.cv-layout { display: grid; grid-template-columns: minmax(340px, 460px) 1fr; gap: 2rem; align-items: start; }
+
+/* ---------- Éditeur ---------- */
+.editeur { display: grid; gap: 1.2rem; }
+.etape {
+  margin: 0; background: var(--blanc); border: 3px solid var(--texte);
+  border-radius: var(--rayon); padding: 1rem 1.2rem 1.2rem; box-shadow: var(--ombre);
+  display: grid; gap: .7rem; min-width: 0;
+}
+.etape legend { font-weight: 800; font-size: 1.15rem; padding: 0 .4rem; display: flex; align-items: center; gap: .5rem; }
+.pastille {
+  display: inline-grid; place-items: center; width: 1.8rem; height: 1.8rem; border-radius: 50%;
+  background: var(--violet); color: var(--blanc); font-size: .95rem;
+}
+.editeur label { display: grid; gap: .2rem; font-weight: 700; font-size: .95rem; }
+.editeur input:not([type=file]), .editeur textarea {
+  font: inherit; font-weight: 400; width: 100%; padding: .5rem .7rem;
+  border: 2px solid var(--texte); border-radius: 10px; background: var(--fond);
+}
+.editeur textarea { resize: vertical; }
+.editeur input:focus, .editeur textarea:focus { outline: 3px solid var(--jaune); outline-offset: 1px; }
+.grille-champs { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; }
+.aide { font-size: .85rem; font-weight: 400; color: var(--texte-doux); margin: 0; }
+.aide.centre { text-align: center; margin-top: .8rem; }
+.label-petit { margin: .3rem 0 0; font-weight: 700; }
+.btn-petit { padding: .45rem 1rem; font-size: .95rem; box-shadow: 0 3px 0 var(--texte); justify-self: start; }
+.lien { background: none; border: 0; font: inherit; color: var(--violet-fonce); cursor: pointer; text-decoration: underline; padding: 0; }
+.lien.danger { color: #c62f5d; }
+.actions-editeur { display: flex; flex-wrap: wrap; gap: .7rem; }
+
+/* Modèles */
+.modeles { display: grid; grid-template-columns: repeat(3, 1fr); gap: .6rem; }
+.modele {
+  font: inherit; font-weight: 700; cursor: pointer; padding: .5rem; border-radius: 12px;
+  border: 3px solid var(--bleu-ciel); background: var(--blanc); display: grid; gap: .4rem; justify-items: center;
+}
+.modele.actif { border-color: var(--violet); background: #f1edff; }
+.mini {
+  position: relative; width: 70px; height: 96px; background: #fff; border: 1px solid #ccc;
+  border-radius: 4px; overflow: hidden;
+  background-image: repeating-linear-gradient(#fff 0 8px, #e4e4ec 8px 10px);
+}
+.mini i, .mini b { position: absolute; display: block; background: var(--violet); }
+.mini-classique i { left: 0; top: 0; bottom: 0; width: 24px; }
+.mini-classique b { left: 6px; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: #fff; }
+.mini-moderne i { left: 0; right: 0; top: 0; height: 24px; }
+.mini-moderne b { left: 6px; top: 6px; width: 13px; height: 13px; border-radius: 50%; background: #fff; }
+.mini-epure i { left: 6px; right: 6px; top: 20px; height: 2px; }
+.mini-epure b { left: 6px; top: 6px; width: 34px; height: 8px; background: #333; }
+
+/* Couleurs */
+.couleurs { display: flex; flex-wrap: wrap; gap: .5rem; }
+.couleur {
+  width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
+  border: 3px solid var(--blanc); box-shadow: 0 0 0 2px var(--texte-doux);
+}
+.couleur.actif { box-shadow: 0 0 0 3px var(--texte); transform: scale(1.1); }
+
+/* Photo */
+.photo-zone { display: flex; gap: 1rem; align-items: center; }
+.photo-apercu {
+  flex: 0 0 84px; height: 84px; border-radius: 50%; border: 3px dashed var(--texte-doux);
+  display: grid; place-items: center; font-size: 2rem; background: var(--fond) center / cover no-repeat;
+}
+.photo-apercu.rempli { border-style: solid; border-color: var(--texte); font-size: 0; }
+.photo-zone label.btn { display: inline-block; }
+.photo-zone .lien { display: block; margin-top: .4rem; }
+
+/* Blocs répétables */
+.liste-blocs { display: grid; gap: .7rem; }
+.liste-blocs:empty { display: none; }
+.bloc { display: grid; gap: .5rem; padding: .8rem; border-radius: 12px; background: var(--bleu-ciel); }
+.bloc-actions { display: flex; gap: 1rem; justify-content: flex-end; }
+
+/* ---------- Aperçu ---------- */
+.apercu-colonne { position: sticky; top: 80px; min-width: 0; }
+.apercu-barre { display: flex; flex-wrap: wrap; gap: .8rem; justify-content: flex-end; align-items: center; margin-bottom: 1rem; }
+.alerte { background: #ffe1ea; border-radius: 10px; padding: .4rem .8rem; font-weight: 700; font-size: .9rem; }
+.apercu-cadre {
+  background: #d9d6e8; border: 3px solid var(--texte); border-radius: var(--rayon);
+  padding: 20px; overflow: hidden;
+}
+.apercu-echelle { transform-origin: top left; }
+.apercu-cadre .cv-page { box-shadow: 0 6px 24px rgba(0,0,0,.25); }
+
+/* ==========================================================
+   Page A4 du CV (794 × 1123 px = A4 à 96 ppp)
+   ========================================================== */
+.cv-page {
+  --accent: #6c4cf5;
+  width: 794px; height: 1123px; overflow: hidden; background: #fff; color: #23232f;
+  font-family: "Segoe UI", Arial, Helvetica, sans-serif; font-size: 13.5px; line-height: 1.45;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+.cv-page * { box-sizing: border-box; }
+.cv-page h1, .cv-page h2, .cv-page h3, .cv-page p, .cv-page ul { margin: 0; }
+.cv-page ul { padding: 0; list-style: none; }
+.cv-page .photo { border-radius: 50%; object-fit: cover; display: block; }
+.cv-page .nom { font-size: 32px; line-height: 1.1; font-weight: 800; }
+.cv-page .titre { font-size: 16px; font-weight: 600; margin-top: 4px; }
+.cv-page .rubrique { margin-bottom: 22px; }
+.cv-page .rubrique h2 { font-size: 15px; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 10px; }
+.cv-page .item { margin-bottom: 12px; }
+.cv-page .item-tete { display: flex; justify-content: space-between; gap: 10px; }
+.cv-page .item-titre { font-weight: 700; }
+.cv-page .item-dates { color: #6b6b7b; white-space: nowrap; font-size: 12.5px; }
+.cv-page .item-lieu { color: var(--accent); font-weight: 600; }
+.cv-page .item-desc { margin-top: 3px; white-space: pre-line; }
+.cv-page .liste-puces li { margin-bottom: 4px; padding-left: 14px; position: relative; }
+.cv-page .liste-puces li::before { content: ""; position: absolute; left: 0; top: .55em; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.cv-page .contact li { margin-bottom: 6px; word-break: break-word; }
+.cv-page .vide { color: #aaa; font-style: italic; }
+
+/* --- Modèle Classique : colonne de couleur à gauche --- */
+.cv-classique { display: grid; grid-template-columns: 260px 1fr; }
+.cv-classique .cote { background: var(--accent); color: #fff; padding: 40px 26px; }
+.cv-classique .cote .photo { width: 150px; height: 150px; margin: 0 auto 26px; border: 5px solid rgba(255,255,255,.6); }
+.cv-classique .cote h2 { border-bottom: 2px solid rgba(255,255,255,.5); padding-bottom: 5px; }
+.cv-classique .principal { padding: 44px 40px; }
+.cv-classique .entete-cv { margin-bottom: 26px; }
+.cv-classique .titre { color: var(--accent); }
+.cv-classique .principal h2 { color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 5px; }
+
+/* --- Modèle Moderne : bandeau en haut --- */
+.cv-moderne .bandeau {
+  background: var(--accent); color: #fff; padding: 36px 44px;
+  display: flex; align-items: center; gap: 28px;
+}
+.cv-moderne .bandeau .photo { width: 130px; height: 130px; border: 5px solid #fff; flex: 0 0 auto; }
+.cv-moderne .bandeau .titre { opacity: .9; }
+.cv-moderne .bandeau .profil { margin-top: 10px; opacity: .95; }
+.cv-moderne .corps { display: grid; grid-template-columns: 1fr 240px; }
+.cv-moderne .principal { padding: 32px 30px 32px 44px; }
+.cv-moderne .cote { padding: 32px 30px; background: color-mix(in srgb, var(--accent) 10%, #fff); min-height: 900px; }
+.cv-moderne h2 { color: var(--accent); display: flex; align-items: center; gap: 8px; }
+.cv-moderne h2::before { content: ""; width: 14px; height: 14px; border-radius: 4px; background: var(--accent); }
+.cv-moderne .principal .item { border-left: 3px solid color-mix(in srgb, var(--accent) 35%, #fff); padding-left: 12px; }
+
+/* --- Modèle Épuré : une colonne, très sobre --- */
+.cv-epure { padding: 56px 60px; }
+.cv-epure .entete-cv { display: flex; justify-content: space-between; align-items: center; gap: 24px; }
+.cv-epure .photo { width: 110px; height: 110px; }
+.cv-epure .titre { color: var(--accent); }
+.cv-epure .contact-ligne { margin-top: 10px; color: #55556a; display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.cv-epure .filet { height: 3px; background: var(--accent); margin: 24px 0 28px; width: 80px; }
+.cv-epure .rubrique { display: grid; grid-template-columns: 150px 1fr; gap: 20px; }
+.cv-epure .rubrique h2 { font-size: 13px; color: var(--accent); padding-top: 2px; }
+.cv-epure .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.cv-epure .tags li { border: 1.5px solid var(--accent); border-radius: 999px; padding: 2px 10px; font-size: 12.5px; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .cv-layout { grid-template-columns: 1fr; }
+  .apercu-colonne { position: static; }
+  .apercu-cadre { padding: 10px; }
+}
+@media (max-width: 420px) {
+  .grille-champs { grid-template-columns: 1fr; }
+}
+
+/* ---------- Impression / PDF : seulement la page du CV ---------- */
+@page { size: A4; margin: 0; }
+@media print {
+  body { background: #fff; }
+  body * { visibility: hidden; }
+  #cv-page, #cv-page * { visibility: visible; }
+  .entete, .editeur, .apercu-barre, .cv-titre, .aide { display: none !important; }
+  .atelier-cv, .cv-layout, .apercu-colonne, .apercu-cadre { all: unset; display: block; }
+  .apercu-echelle { transform: none !important; height: auto !important; }
+  #cv-page { position: absolute; left: 0; top: 0; box-shadow: none; width: 210mm; height: 297mm; }
+}

@@ -20,6 +20,17 @@ Site de présentation d'un atelier numérique ludique pour les jeunes (le nom «
 | Réseaux  | Vrai ou faux en 7 questions |
 | Culture  | Quiz sur des œuvres et des artistes célèbres |
 
+## Créateur de CV (`cv.html`)
+
+1. On choisit un **modèle** (Classique, Moderne, Épuré) et une **couleur**.
+2. On remplit ses informations ; l'**aperçu se met à jour en direct**.
+3. On **importe sa photo** : elle est recadrée en carré automatiquement.
+4. On ajoute ses expériences et formations, qu'on peut réordonner.
+5. **Télécharger en PDF** ouvre la fenêtre d'impression : choisir « Enregistrer au format PDF ».
+
+Une alerte prévient si le CV dépasse une page. Les données restent dans le navigateur
+de l'utilisateur (rien n'est envoyé sur Internet) et sont retrouvées à la visite suivante.
+
 Les questions se modifient facilement dans `js/main.js` (objet `QUIZ`).
 
 ## Lancer le site
@@ -29,9 +40,12 @@ Aucune installation : ouvrir `index.html` dans un navigateur.
 ## Structure
 
 ```
-index.html     page unique
-css/style.css  styles
+index.html     page d'accueil, programme, mini-jeux
+cv.html        créateur de CV
+css/style.css  styles communs
+css/cv.css     styles du créateur de CV et des 3 modèles
 js/main.js     menu, onglets, quiz et mini-jeux
+js/cv.js       créateur de CV
 ```
 
 ## À compléter

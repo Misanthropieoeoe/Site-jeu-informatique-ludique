@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Créateur de CV — Clic &amp; Avenir</title>
+  <meta name="description" content="Crée ton CV en quelques minutes : choisis un modèle, remplis tes informations, ajoute ta photo et télécharge-le en PDF.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/cv.css">
+</head>
+<body>
+  <header class="entete">
+    <nav class="nav">
+      <a href="index.html" class="logo">🚀 Clic &amp; Avenir</a>
+      <button class="menu-btn" aria-label="Ouvrir le menu" aria-expanded="false">☰</button>
+      <ul class="menu">
+        <li><a href="index.html#modules">Programme</a></li>
+        <li><a href="index.html#jeux">Mini-jeux</a></li>
+        <li><a href="cv.html" aria-current="page">Créer mon CV</a></li>
+        <li><a href="index.html#infos">Infos pratiques</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="atelier-cv">
+    <div class="cv-titre">
+      <h1>📄 Crée ton CV</h1>
+      <p>Choisis un modèle, remplis tes infos et télécharge ton CV en PDF. Tout reste sur ton ordinateur : rien n'est envoyé sur Internet.</p>
+    </div>
+
+    <div class="cv-layout">
+      <!-- ===== ÉDITEUR ===== -->
+      <form class="editeur" id="editeur" autocomplete="off">
+
+        <fieldset class="etape">
+          <legend><span class="pastille">1</span> Choisis ton modèle</legend>
+          <div class="modeles" id="modeles">
+            <button type="button" class="modele actif" data-modele="classique">
+              <span class="mini mini-classique"><i></i><b></b></span>Classique
+            </button>
+            <button type="button" class="modele" data-modele="moderne">
+              <span class="mini mini-moderne"><i></i><b></b></span>Moderne
+            </button>
+            <button type="button" class="modele" data-modele="epure">
+              <span class="mini mini-epure"><i></i><b></b></span>Épuré
+            </button>
+          </div>
+          <p class="label-petit">Couleur</p>
+          <div class="couleurs" id="couleurs"></div>
+        </fieldset>
+
+        <fieldset class="etape">
+          <legend><span class="pastille">2</span> Qui es-tu ?</legend>
+          <div class="photo-zone">
+            <div class="photo-apercu" id="photo-apercu">📷</div>
+            <div>
+              <label class="btn btn-secondaire btn-petit">
+                Importer une photo
+                <input type="file" id="photo" accept="image/*" hidden>
+              </label>
+              <button type="button" class="lien" id="photo-retirer" hidden>Retirer la photo</button>
+              <p class="aide">Facultatif. Une photo sobre, sur fond uni.</p>
+            </div>
+          </div>
+          <div class="grille-champs">
+            <label>Prénom <input name="prenom"></label>
+            <label>Nom <input name="nom"></label>
+          </div>
+          <label>Poste recherché <input name="titre" placeholder="ex : Vendeur·se en boulangerie"></label>
+          <div class="grille-champs">
+            <label>E-mail <input name="email" type="email"></label>
+            <label>Téléphone <input name="tel" type="tel"></label>
+          </div>
+          <div class="grille-champs">
+            <label>Ville <input name="ville"></label>
+            <label>Permis / mobilité <input name="mobilite" placeholder="ex : Permis B, véhiculé"></label>
+          </div>
+          <label>Ton profil en 2 phrases
+            <textarea name="profil" rows="3" placeholder="ex : Motivée et souriante, j'aime le contact avec les clients…"></textarea>
+          </label>
+        </fieldset>
+
+        <fieldset class="etape">
+          <legend><span class="pastille">3</span> Expériences</legend>
+          <p class="aide">Stages, jobs d'été, baby-sitting, bénévolat… tout compte !</p>
+          <div id="liste-experiences" class="liste-blocs"></div>
+          <button type="button" class="btn btn-secondaire btn-petit" data-ajouter="experiences">+ Ajouter une expérience</button>
+        </fieldset>
+
+        <fieldset class="etape">
+          <legend><span class="pastille">4</span> Formations</legend>
+          <div id="liste-formations" class="liste-blocs"></div>
+          <button type="button" class="btn btn-secondaire btn-petit" data-ajouter="formations">+ Ajouter une formation</button>
+        </fieldset>
+
+        <fieldset class="etape">
+          <legend><span class="pastille">5</span> Et aussi…</legend>
+          <label>Compétences <span class="aide">(une par ligne)</span>
+            <textarea name="competences" rows="4"></textarea>
+          </label>
+          <label>Langues <span class="aide">(une par ligne)</span>
+            <textarea name="langues" rows="2"></textarea>
+          </label>
+          <label>Centres d'intérêt <span class="aide">(un par ligne)</span>
+            <textarea name="loisirs" rows="3"></textarea>
+          </label>
+        </fieldset>
+
+        <div class="actions-editeur">
+          <button type="button" class="btn btn-secondaire btn-petit" id="exemple">Remplir avec un exemple</button>
+          <button type="button" class="btn btn-secondaire btn-petit" id="effacer">Tout effacer</button>
+        </div>
+      </form>
+
+      <!-- ===== APERÇU ===== -->
+      <section class="apercu-colonne" aria-label="Aperçu du CV">
+        <div class="apercu-barre">
+          <span id="alerte-page" class="alerte" hidden>⚠️ Ton CV dépasse une page : raccourcis un peu !</span>
+          <button class="btn btn-principal" id="telecharger">⬇ Télécharger en PDF</button>
+        </div>
+        <div class="apercu-cadre" id="apercu-cadre">
+          <div class="apercu-echelle" id="apercu-echelle">
+            <article class="cv-page" id="cv-page"></article>
+          </div>
+        </div>
+        <p class="aide centre">Astuce : dans la fenêtre d'impression, choisis « Enregistrer au format PDF » et décoche « En-têtes et pieds de page ».</p>
+      </section>
+    </div>
+  </main>
+
+  <template id="tpl-experiences">
+    <div class="bloc">
+      <div class="grille-champs">
+        <label>Poste <input data-champ="poste"></label>
+        <label>Entreprise <input data-champ="lieu"></label>
+      </div>
+      <label>Dates <input data-champ="dates" placeholder="ex : Juin 2024 – Août 2024"></label>
+      <label>Ce que tu as fait <textarea data-champ="description" rows="2"></textarea></label>
+      <div class="bloc-actions">
+        <button type="button" class="lien" data-action="monter">▲</button>
+        <button type="button" class="lien" data-action="descendre">▼</button>
+        <button type="button" class="lien danger" data-action="supprimer">Supprimer</button>
+      </div>
+    </div>
+  </template>
+  <template id="tpl-formations">
+    <div class="bloc">
+      <label>Diplôme ou formation <input data-champ="poste"></label>
+      <div class="grille-champs">
+        <label>Établissement <input data-champ="lieu"></label>
+        <label>Dates <input data-champ="dates" placeholder="ex : 2023 – 2025"></label>
+      </div>
+      <div class="bloc-actions">
+        <button type="button" class="lien" data-action="monter">▲</button>
+        <button type="button" class="lien" data-action="descendre">▼</button>
+        <button type="button" class="lien danger" data-action="supprimer">Supprimer</button>
+      </div>
+    </div>
+  </template>
+
+  <script src="js/cv.js"></script>
+</body>
+</html>
