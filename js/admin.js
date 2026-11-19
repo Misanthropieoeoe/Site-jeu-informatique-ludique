@@ -176,26 +176,93 @@ document.getElementById("tout-effacer").addEventListener("click", () => {
   rafraichir();
 });
 
-/* ---------- Export CSV (s'ouvre dans Excel) : une ligne par réponse ---------- */
+/* ---------- Export Excel (.xlsx) : 4 onglets ---------- */
 document.getElementById("exporter").addEventListener("click", () => {
-  const cellule = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-  const lignes = [["Date", "Joueur", "Jeu", "Résultat", "Question / essai", "Réponse donnée", "Bonne réponse", "Juste ?"]];
-  resultatsFiltres().forEach((r) => {
-    const base = [formatDate(r.date), r.nom, (NOMS_JEUX[r.jeu] || r.jeu).replace(/^\S+\s/, "")];
+  const liste = resultatsFiltres().sort((a, b) => a.date.localeCompare(b.date));
+  if (!liste.length) { alert("Aucun résultat à exporter."); return; }
+  const nomJeu = (r) => (NOMS_JEUX[r.jeu] || r.jeu).replace(/^\S+\s/, ""); // sans l'emoji
+  const ouiNon = (ok) => ({ v: ok ? "oui" : "non", style: ok ? "oui" : "non" });
+
+  // 1. Une ligne par partie
+  const parties = liste.map((r) => [
+    formatDate(r.date), { v: r.nom, style: "gras" }, nomJeu(r),
+    r.jeu === "lettre" ? `Réussie en ${r.essais} essai(s)` : `${r.points} / ${r.total}`,
+    r.jeu === "lettre" ? "" : r.points,
+    r.total,
+    r.jeu === "lettre" ? r.essais : "",
+    { v: reussite(r), style: "pourcent" },
+  ]);
+
+  // 2. Une ligne par réponse (ou par essai pour la lettre)
+  const reponses = [];
+  liste.forEach((r) => {
+    const base = [formatDate(r.date), { v: r.nom, style: "gras" }, nomJeu(r)];
     if (r.jeu === "lettre") {
       (r.tentatives || []).forEach((n, i) =>
-        lignes.push([...base, `${r.essais} essai(s)`, `Essai ${i + 1}`, `${n}/${r.total} blocs bien placés`, "", n === r.total ? "oui" : "non"]));
+        reponses.push([...base, `Essai ${i + 1}`, `${n} / ${r.total} blocs bien placés`, `${r.total} / ${r.total}`, ouiNon(n === r.total)]));
     } else {
       (r.reponses || []).forEach((rep) =>
-        lignes.push([...base, `${r.points}/${r.total}`, rep.question, rep.choisie, rep.bonne, rep.juste ? "oui" : "non"]));
+        reponses.push([...base, rep.question, rep.choisie, rep.bonne, ouiNon(rep.juste)]));
     }
   });
-  const csv = "﻿" + lignes.map((l) => l.map(cellule).join(";")).join("\r\n");
+
+  // 3. Bilan par joueur
+  const joueurs = new Map();
+  liste.forEach((r) => {
+    const cle = normaliser(r.nom);
+    if (!joueurs.has(cle)) joueurs.set(cle, { nom: r.nom, parties: [] });
+    joueurs.get(cle).parties.push(r);
+  });
+  const parJoueur = [...joueurs.values()].sort((a, b) => a.nom.localeCompare(b.nom, "fr")).map((j) => {
+    const meilleur = (jeu) => {
+      const p = j.parties.filter((r) => r.jeu === jeu);
+      return p.length ? { v: Math.max(...p.map(reussite)), style: "pourcent" } : "";
+    };
+    return [
+      { v: j.nom, style: "gras" }, j.parties.length,
+      { v: j.parties.reduce((s, r) => s + reussite(r), 0) / j.parties.length, style: "pourcent" },
+      ...Object.keys(NOMS_JEUX).map(meilleur),
+      formatDate(j.parties[j.parties.length - 1].date),
+    ];
+  });
+
+  // 4. Statistiques par question
+  const stats = new Map();
+  liste.forEach((r) => (r.reponses || []).forEach((rep) => {
+    if (!stats.has(rep.question)) stats.set(rep.question, { jeu: nomJeu(r), question: rep.question, bonne: rep.bonne, total: 0, erreurs: 0 });
+    const s = stats.get(rep.question);
+    s.total++;
+    if (!rep.juste) s.erreurs++;
+  }));
+  const questions = [...stats.values()].sort((a, b) => b.erreurs / b.total - a.erreurs / a.total).map((s) => [
+    s.jeu, s.question, s.bonne, s.total, s.erreurs, { v: s.erreurs / s.total, style: s.erreurs / s.total >= 0.5 ? "alerte" : "pourcent" },
+  ]);
+
+  const fichier = creerExcel([
+    { nom: "Parties", lignes: parties, colonnes: [
+      { titre: "Date", largeur: 17 }, { titre: "Joueur", largeur: 18 }, { titre: "Jeu", largeur: 22 },
+      { titre: "Résultat", largeur: 22 }, { titre: "Bonnes réponses", largeur: 16 }, { titre: "Nb questions / blocs", largeur: 20 },
+      { titre: "Essais (lettre)", largeur: 15 }, { titre: "Réussite", largeur: 11 } ] },
+    { nom: "Détail des réponses", lignes: reponses, colonnes: [
+      { titre: "Date", largeur: 17 }, { titre: "Joueur", largeur: 18 }, { titre: "Jeu", largeur: 22 },
+      { titre: "Question", largeur: 55 }, { titre: "Réponse donnée", largeur: 40 }, { titre: "Bonne réponse", largeur: 40 },
+      { titre: "Juste ?", largeur: 9 } ] },
+    { nom: "Par joueur", lignes: parJoueur, colonnes: [
+      { titre: "Joueur", largeur: 18 }, { titre: "Parties", largeur: 9 }, { titre: "Réussite moyenne", largeur: 17 },
+      ...Object.values(NOMS_JEUX).map((n) => ({ titre: "Meilleur : " + n.replace(/^\S+\s/, ""), largeur: 20 })),
+      { titre: "Dernière partie", largeur: 17 } ] },
+    { nom: "Questions", lignes: questions, colonnes: [
+      { titre: "Jeu", largeur: 22 }, { titre: "Question", largeur: 60 }, { titre: "Bonne réponse", largeur: 40 },
+      { titre: "Nb réponses", largeur: 12 }, { titre: "Nb erreurs", largeur: 11 }, { titre: "% d'erreurs", largeur: 12 } ] },
+  ]);
+
   const lien = document.createElement("a");
-  lien.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
-  lien.download = `resultats-clic-avenir-${new Date().toISOString().slice(0, 10)}.csv`;
+  lien.href = URL.createObjectURL(fichier);
+  lien.download = `resultats-clic-avenir-${new Date().toISOString().slice(0, 10)}.xlsx`;
+  document.body.appendChild(lien);
   lien.click();
-  URL.revokeObjectURL(lien.href);
+  lien.remove();
+  setTimeout(() => URL.revokeObjectURL(lien.href), 1000);
 });
 
 afficherEspace();

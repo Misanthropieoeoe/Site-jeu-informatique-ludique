@@ -44,7 +44,9 @@ Accessible par le lien « 🔒 Espace animateur » en bas de la page d'accueil.
 - Une fiche par joueur : chaque partie avec sa date, son résultat et **le détail du test**
   (réponse donnée, bonne réponse ; pour la lettre, le résultat de chaque essai).
 - Les questions les plus ratées, pour savoir quoi réexpliquer.
-- Export **CSV** (s'ouvre dans Excel), suppression d'une partie ou de tout.
+- **Export Excel (.xlsx)** avec 4 onglets : *Parties*, *Détail des réponses*, *Par joueur*,
+  *Questions* (taux d'erreur). L'export tient compte des filtres et fonctionne hors connexion.
+- Suppression d'une partie ou de tout.
 
 ⚠️ Limites de cette version sans serveur : les résultats restent dans le navigateur de
 **l'ordinateur où l'on a joué**, et le mot de passe n'est qu'une protection légère
@@ -69,6 +71,7 @@ css/admin.css  styles de l'espace animateur
 js/resultats.js enregistrement des résultats (partagé site / admin)
 js/main.js     menu, onglets, quiz et mini-jeux
 js/admin.js    espace animateur
+js/excel.js    génération des fichiers Excel (.xlsx), sans librairie externe
 js/cv.js       créateur de CV
 ```
 
