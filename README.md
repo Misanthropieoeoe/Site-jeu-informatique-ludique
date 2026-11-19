@@ -48,16 +48,22 @@ Accessible par le lien « 🔒 Espace animateur » en bas de la page d'accueil.
   *Questions* (taux d'erreur). L'export tient compte des filtres et fonctionne hors connexion.
 - Suppression d'une partie ou de tout.
 
-⚠️ Limites de cette version sans serveur : les résultats restent dans le navigateur de
-**l'ordinateur où l'on a joué**, et le mot de passe n'est qu'une protection légère
-(quelqu'un qui s'y connaît pourrait lire les données). Pour rassembler les résultats de
-plusieurs postes avec une vraie sécurité, il faudra un hébergement avec une base de données.
+### Deux modes
+
+- **Mode salle** (recommandé en atelier) : le poste animateur lance `serveur.py`
+  (double-clic sur `lancer-serveur.bat`), les autres postes ouvrent le site depuis lui.
+  Chaque partie terminée remonte **automatiquement** sur le poste animateur, avec le
+  numéro du poste. Le mot de passe est alors vérifié par le serveur.
+  👉 Mode d'emploi pas à pas : **[GUIDE-SALLE.md](GUIDE-SALLE.md)**
+- **Mode local** (site ouvert directement, sans serveur) : chaque ordinateur garde ses
+  propres résultats ; le mot de passe n'est qu'une protection légère.
 
 Les questions se modifient facilement dans `js/main.js` (objet `QUIZ`).
 
 ## Lancer le site
 
-Aucune installation : ouvrir `index.html` dans un navigateur.
+- **Un seul poste** : ouvrir `index.html` dans un navigateur, aucune installation.
+- **Plusieurs postes** : voir [GUIDE-SALLE.md](GUIDE-SALLE.md).
 
 ## Structure
 
@@ -72,6 +78,9 @@ js/resultats.js enregistrement des résultats (partagé site / admin)
 js/main.js     menu, onglets, quiz et mini-jeux
 js/admin.js    espace animateur
 js/excel.js    génération des fichiers Excel (.xlsx), sans librairie externe
+serveur.py     serveur de salle (Python 3, bibliothèque standard uniquement)
+lancer-serveur.bat / .sh   lancement du serveur en double-clic
+donnees/       résultats reçus par le serveur (créé automatiquement, non versionné)
 js/cv.js       créateur de CV
 ```
 

@@ -80,3 +80,12 @@
   .partie summary .date { grid-column: 1 / -1; }
   .partie summary::after { grid-column: 1 / -1; }
 }
+
+/* Mode salle / local */
+.mode { margin: 1rem 0 0; padding: .7rem 1rem; border-radius: 12px; border: 2px solid var(--texte); }
+.mode.salle { background: #d8f6ee; }
+.mode.local { background: var(--bleu-ciel); }
+.mode.erreur { background: #ffe1ea; }
+.mode code { background: var(--blanc); padding: 0 .3rem; border-radius: 4px; }
+.aide-mode { font-weight: 700; color: var(--texte-doux); }
+.partie .date small { font-weight: 700; color: var(--violet-fonce); }
