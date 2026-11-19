@@ -23,6 +23,10 @@ document.querySelectorAll(".onglet").forEach((onglet) => {
     document.querySelectorAll(".jeu").forEach((jeu) => {
       jeu.hidden = jeu.id !== "jeu-" + onglet.dataset.jeu;
     });
+    // On reprend le dernier prénom saisi pour ne pas le retaper
+    document.querySelectorAll(".ecran-joueur input").forEach((champ) => {
+      if (!champ.value) champ.value = Joueurs.dernierNom();
+    });
   });
 });
 
@@ -204,16 +208,102 @@ const QUIZ = {
 };
 
 /* ==========================================================
+   Joueurs et tableaux des scores
+   Les scores sont gardés dans le navigateur (un classement par ordinateur).
+   ========================================================== */
+const echapper = (t) =>
+  String(t ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+const Joueurs = {
+  CLE_NOM: "clic-avenir-joueur",
+  CLE_SCORES: "clic-avenir-scores-",
+  dernierNom() {
+    try { return localStorage.getItem(this.CLE_NOM) || ""; } catch (e) { return ""; }
+  },
+  memoriser(nom) {
+    try { localStorage.setItem(this.CLE_NOM, nom); } catch (e) { /* stockage indisponible */ }
+  },
+  scores(jeu) {
+    try { return JSON.parse(localStorage.getItem(this.CLE_SCORES + jeu)) || []; } catch (e) { return []; }
+  },
+  ajouter(jeu, entree) {
+    const liste = [...this.scores(jeu), entree].slice(-100);
+    try { localStorage.setItem(this.CLE_SCORES + jeu, JSON.stringify(liste)); } catch (e) { /* tant pis */ }
+  },
+  effacer(jeu) {
+    try { localStorage.removeItem(this.CLE_SCORES + jeu); } catch (e) { /* tant pis */ }
+  },
+};
+
+/* Classement : les quiz se trient par score, la lettre par nombre d'essais */
+function tableauScores(jeu, idSurligne) {
+  const scores = Joueurs.scores(jeu);
+  if (!scores.length) return "";
+  const parEssais = scores[0].essais !== undefined;
+  const tries = [...scores].sort((a, b) =>
+    parEssais ? a.essais - b.essais || a.id - b.id : b.points - a.points || a.id - b.id
+  ).slice(0, 10);
+  const medaille = (i) => ["🥇", "🥈", "🥉"][i] || `${i + 1}.`;
+  const resultat = (s) => (parEssais ? `${s.essais} essai${s.essais > 1 ? "s" : ""}` : `${s.points} / ${s.total}`);
+  return `
+    <div class="classement">
+      <h4>🏆 Tableau des scores</h4>
+      <ol>${tries.map((s, i) => `
+        <li class="${s.id === idSurligne ? "moi" : ""}">
+          <span class="rang">${medaille(i)}</span>
+          <span class="joueur">${echapper(s.nom)}</span>
+          <span class="points">${resultat(s)}</span>
+        </li>`).join("")}
+      </ol>
+      <button type="button" class="lien effacer-scores" data-jeu="${jeu}">Effacer les scores</button>
+    </div>`;
+}
+
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest(".effacer-scores");
+  if (!btn || !confirm("Effacer tous les scores de ce jeu ?")) return;
+  Joueurs.effacer(btn.dataset.jeu);
+  btn.closest(".classement").remove();
+});
+
+/* Écran d'accueil d'un jeu : on demande le prénom avant de jouer */
+function demanderNom(conteneur, jeu, auDepart) {
+  conteneur.innerHTML = `
+    <form class="ecran-joueur">
+      <label>👤 Ton prénom ou ton pseudo
+        <input class="champ" name="nom" maxlength="20" required value="${echapper(Joueurs.dernierNom())}">
+      </label>
+      <button class="btn btn-principal" type="submit">C'est parti !</button>
+    </form>
+    ${tableauScores(jeu)}`;
+  conteneur.querySelector("form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const nom = e.target.nom.value.trim();
+    if (!nom) return;
+    Joueurs.memoriser(nom);
+    auDepart(nom);
+  });
+}
+
+/* ==========================================================
    Moteur de quiz
    ========================================================== */
-function lancerQuiz(conteneur, questions) {
+function lancerQuiz(conteneur, questions, jeu) {
   let index = 0;
   let score = 0;
+  let joueur = "";
+
+  function commencer(nom) {
+    joueur = nom;
+    index = 0;
+    score = 0;
+    afficherQuestion();
+  }
 
   function afficherQuestion() {
     const { q, choix } = questions[index];
     conteneur.innerHTML = `
-      <p class="quiz-progression">Question ${index + 1} / ${questions.length} · Score : ${score}</p>
+      <p class="quiz-progression">👤 ${echapper(joueur)} · Question ${index + 1} / ${questions.length} · Score : ${score}</p>
       <p class="quiz-question">${q}</p>
       <div class="quiz-choix">${choix.map((c, i) => `<button class="choix" data-i="${i}">${c}</button>`).join("")}</div>
       <div class="quiz-suite"></div>`;
@@ -240,24 +330,29 @@ function lancerQuiz(conteneur, questions) {
   }
 
   function afficherFin() {
+    const entree = { id: Date.now(), nom: joueur, points: score, total: questions.length };
+    Joueurs.ajouter(jeu, entree);
     const ratio = score / questions.length;
     const bilan =
-      ratio === 1 ? "Parfait, tu es un·e expert·e ! 🏆" :
-      ratio >= 0.6 ? "Très bien, tu as les bons réflexes ! 👏" :
-      "Pas mal ! L'atelier t'aidera à aller plus loin. 💪";
+      ratio === 1 ? "parfait, tu es un·e expert·e ! 🏆" :
+      ratio >= 0.6 ? "très bien, tu as les bons réflexes ! 👏" :
+      "pas mal ! L'atelier t'aidera à aller plus loin. 💪";
     conteneur.innerHTML = `
-      <p class="quiz-fin">Ton score : ${score} / ${questions.length}</p>
-      <p>${bilan}</p>
-      <button class="btn btn-secondaire">Recommencer</button>`;
-    conteneur.querySelector("button").addEventListener("click", () => {
-      index = 0; score = 0; afficherQuestion();
-    });
+      <p class="quiz-fin">${echapper(joueur)}, ton score : ${score} / ${questions.length}</p>
+      <p>Bravo ${echapper(joueur)}, ${bilan}</p>
+      <div class="boutons">
+        <button class="btn btn-principal" data-action="rejouer">Rejouer</button>
+        <button class="btn btn-secondaire" data-action="changer">Changer de joueur</button>
+      </div>
+      ${tableauScores(jeu, entree.id)}`;
+    conteneur.querySelector('[data-action="rejouer"]').addEventListener("click", () => commencer(joueur));
+    conteneur.querySelector('[data-action="changer"]').addEventListener("click", () => demanderNom(conteneur, jeu, commencer));
   }
 
-  afficherQuestion();
+  demanderNom(conteneur, jeu, commencer);
 }
 
-document.querySelectorAll(".quiz").forEach((el) => lancerQuiz(el, QUIZ[el.dataset.quiz]));
+document.querySelectorAll(".quiz").forEach((el) => lancerQuiz(el, QUIZ[el.dataset.quiz], el.dataset.quiz));
 
 /* ==========================================================
    Outils mail : vérificateur et générateur d'adresse
@@ -337,7 +432,26 @@ document.querySelectorAll(".quiz").forEach((el) => lancerQuiz(el, QUIZ[el.datase
   ];
   const liste = document.getElementById("lettre-blocs");
   const messageEl = document.getElementById("lettre-message");
+  const accueil = document.getElementById("lettre-accueil");
+  const zoneJeu = document.getElementById("lettre-jeu");
+  const barre = document.getElementById("lettre-barre");
+  const classement = document.getElementById("lettre-classement");
   let ordre = [];
+  let joueur = "";
+  let essais = 0;
+  let termine = false;
+
+  function commencer(nom) {
+    joueur = nom;
+    accueil.innerHTML = "";
+    zoneJeu.hidden = false;
+    barre.innerHTML = `👤 ${echapper(joueur)} · <button type="button" class="lien" id="lettre-changer">Changer de joueur</button>`;
+    document.getElementById("lettre-changer").addEventListener("click", () => {
+      zoneJeu.hidden = true;
+      demanderNom(accueil, "lettre", commencer);
+    });
+    melanger();
+  }
 
   function melanger() {
     do {
@@ -347,6 +461,9 @@ document.querySelectorAll(".quiz").forEach((el) => lancerQuiz(el, QUIZ[el.datase
         [ordre[i], ordre[j]] = [ordre[j], ordre[i]];
       }
     } while (ordre.every((v, i) => v === i));
+    essais = 0;
+    termine = false;
+    classement.innerHTML = "";
     afficherMessage(messageEl, "");
     dessiner();
   }
@@ -364,7 +481,7 @@ document.querySelectorAll(".quiz").forEach((el) => lancerQuiz(el, QUIZ[el.datase
 
   liste.addEventListener("click", (e) => {
     const btn = e.target.closest("button");
-    if (!btn) return;
+    if (!btn || termine) return;
     const pos = Number(btn.dataset.pos);
     const cible = pos + Number(btn.dataset.sens);
     [ordre[pos], ordre[cible]] = [ordre[cible], ordre[pos]];
@@ -373,17 +490,24 @@ document.querySelectorAll(".quiz").forEach((el) => lancerQuiz(el, QUIZ[el.datase
   });
 
   document.getElementById("lettre-verifier").addEventListener("click", () => {
+    if (termine) return;
+    essais++;
     const bienPlaces = ordre.filter((b, pos) => b === pos).length;
     dessiner(true);
     if (bienPlaces === BLOCS.length) {
-      afficherMessage(messageEl, "Bravo, ta lettre est parfaitement construite ! 🎉", "bravo");
+      termine = true;
+      const entree = { id: Date.now(), nom: joueur, essais };
+      Joueurs.ajouter("lettre", entree);
+      afficherMessage(messageEl,
+        `Bravo ${joueur}, ta lettre est parfaitement construite en ${essais} essai${essais > 1 ? "s" : ""} ! 🎉`, "bravo");
+      classement.innerHTML = tableauScores("lettre", entree.id);
     } else {
       afficherMessage(messageEl, `${bienPlaces} / ${BLOCS.length} blocs bien placés. Les blocs en rose sont à déplacer.`, "oups");
     }
   });
   document.getElementById("lettre-melanger").addEventListener("click", melanger);
 
-  melanger();
+  demanderNom(accueil, "lettre", commencer);
 })();
 
 /* ==========================================================

@@ -160,12 +160,17 @@
       <div class="jeu" id="jeu-lettre" role="tabpanel" hidden>
         <h3>Remets la lettre de motivation dans l'ordre</h3>
         <p>Les paragraphes ont été mélangés&nbsp;! Utilise les flèches pour les remettre dans le bon ordre, puis vérifie.</p>
-        <ol class="lettre" id="lettre-blocs"></ol>
-        <div class="boutons">
-          <button class="btn btn-principal" id="lettre-verifier">Vérifier</button>
-          <button class="btn btn-secondaire" id="lettre-melanger">Mélanger</button>
+        <div id="lettre-accueil"></div>
+        <div id="lettre-jeu" hidden>
+          <p class="barre-joueur" id="lettre-barre"></p>
+          <ol class="lettre" id="lettre-blocs"></ol>
+          <div class="boutons">
+            <button class="btn btn-principal" id="lettre-verifier">Vérifier</button>
+            <button class="btn btn-secondaire" id="lettre-melanger">Nouvelle partie</button>
+          </div>
+          <p class="message" id="lettre-message" aria-live="polite"></p>
+          <div id="lettre-classement"></div>
         </div>
-        <p class="message" id="lettre-message" aria-live="polite"></p>
         <div class="astuce">
           <h4>💡 Les astuces Word</h4>
           <ul>

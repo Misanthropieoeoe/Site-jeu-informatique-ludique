@@ -214,3 +214,21 @@ a { color: var(--violet-fonce); }
 .suggestions li.note-fournisseur {
   font-family: var(--police); font-weight: 400; background: none; color: var(--texte-doux); padding: 0;
 }
+
+/* ---------- Joueurs et tableau des scores ---------- */
+.ecran-joueur { display: flex; flex-wrap: wrap; gap: .8rem; align-items: flex-end; max-width: 520px; }
+.ecran-joueur label { flex: 1 1 220px; display: grid; gap: .3rem; font-weight: 800; }
+.ecran-joueur .champ { width: 100%; }
+.barre-joueur { font-weight: 800; color: var(--texte-doux); }
+.classement {
+  margin-top: 1.5rem; max-width: 420px; background: var(--bleu-ciel);
+  border: 3px solid var(--texte); border-radius: var(--rayon); padding: 1rem 1.2rem;
+}
+.classement h4 { margin: 0 0 .5rem; font-size: 1.1rem; }
+.classement ol { list-style: none; padding: 0; margin: 0 0 .5rem; display: grid; gap: .3rem; }
+.classement li { display: flex; gap: .6rem; align-items: center; padding: .3rem .6rem; border-radius: 8px; background: var(--blanc); }
+.classement li.moi { background: var(--jaune); font-weight: 800; }
+.classement .rang { width: 2rem; text-align: center; }
+.classement .joueur { flex: 1; overflow-wrap: anywhere; }
+.classement .points { font-weight: 800; white-space: nowrap; }
+.lien { background: none; border: 0; font: inherit; color: var(--violet-fonce); cursor: pointer; text-decoration: underline; padding: 0; }

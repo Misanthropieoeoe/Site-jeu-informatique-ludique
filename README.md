@@ -31,6 +31,11 @@ Site de présentation d'un atelier numérique ludique pour les jeunes (le nom «
 Une alerte prévient si le CV dépasse une page. Les données restent dans le navigateur
 de l'utilisateur (rien n'est envoyé sur Internet) et sont retrouvées à la visite suivante.
 
+Avant chaque jeu, le joueur entre son **prénom ou pseudo**. À la fin, son résultat est ajouté
+au **tableau des scores** du jeu (top 10 ; les quiz sont classés par score, la lettre par nombre
+d'essais). Les scores restent sur l'ordinateur utilisé et peuvent être effacés avec le lien
+« Effacer les scores ».
+
 Les questions se modifient facilement dans `js/main.js` (objet `QUIZ`).
 
 ## Lancer le site
