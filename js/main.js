@@ -25,7 +25,7 @@ document.querySelectorAll(".onglet").forEach((onglet) => {
     });
     // On reprend le dernier prénom saisi pour ne pas le retaper
     document.querySelectorAll(".ecran-joueur input").forEach((champ) => {
-      if (!champ.value) champ.value = Joueurs.dernierNom();
+      if (!champ.value) champ.value = Resultats.dernierNom();
     });
   });
 });
@@ -207,80 +207,20 @@ const QUIZ = {
   ],
 };
 
-/* ==========================================================
-   Joueurs et tableaux des scores
-   Les scores sont gardés dans le navigateur (un classement par ordinateur).
-   ========================================================== */
-const echapper = (t) =>
-  String(t ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-
-const Joueurs = {
-  CLE_NOM: "clic-avenir-joueur",
-  CLE_SCORES: "clic-avenir-scores-",
-  dernierNom() {
-    try { return localStorage.getItem(this.CLE_NOM) || ""; } catch (e) { return ""; }
-  },
-  memoriser(nom) {
-    try { localStorage.setItem(this.CLE_NOM, nom); } catch (e) { /* stockage indisponible */ }
-  },
-  scores(jeu) {
-    try { return JSON.parse(localStorage.getItem(this.CLE_SCORES + jeu)) || []; } catch (e) { return []; }
-  },
-  ajouter(jeu, entree) {
-    const liste = [...this.scores(jeu), entree].slice(-100);
-    try { localStorage.setItem(this.CLE_SCORES + jeu, JSON.stringify(liste)); } catch (e) { /* tant pis */ }
-  },
-  effacer(jeu) {
-    try { localStorage.removeItem(this.CLE_SCORES + jeu); } catch (e) { /* tant pis */ }
-  },
-};
-
-/* Classement : les quiz se trient par score, la lettre par nombre d'essais */
-function tableauScores(jeu, idSurligne) {
-  const scores = Joueurs.scores(jeu);
-  if (!scores.length) return "";
-  const parEssais = scores[0].essais !== undefined;
-  const tries = [...scores].sort((a, b) =>
-    parEssais ? a.essais - b.essais || a.id - b.id : b.points - a.points || a.id - b.id
-  ).slice(0, 10);
-  const medaille = (i) => ["🥇", "🥈", "🥉"][i] || `${i + 1}.`;
-  const resultat = (s) => (parEssais ? `${s.essais} essai${s.essais > 1 ? "s" : ""}` : `${s.points} / ${s.total}`);
-  return `
-    <div class="classement">
-      <h4>🏆 Tableau des scores</h4>
-      <ol>${tries.map((s, i) => `
-        <li class="${s.id === idSurligne ? "moi" : ""}">
-          <span class="rang">${medaille(i)}</span>
-          <span class="joueur">${echapper(s.nom)}</span>
-          <span class="points">${resultat(s)}</span>
-        </li>`).join("")}
-      </ol>
-      <button type="button" class="lien effacer-scores" data-jeu="${jeu}">Effacer les scores</button>
-    </div>`;
-}
-
-document.addEventListener("click", (e) => {
-  const btn = e.target.closest(".effacer-scores");
-  if (!btn || !confirm("Effacer tous les scores de ce jeu ?")) return;
-  Joueurs.effacer(btn.dataset.jeu);
-  btn.closest(".classement").remove();
-});
-
 /* Écran d'accueil d'un jeu : on demande le prénom avant de jouer */
 function demanderNom(conteneur, jeu, auDepart) {
   conteneur.innerHTML = `
     <form class="ecran-joueur">
       <label>👤 Ton prénom ou ton pseudo
-        <input class="champ" name="nom" maxlength="20" required value="${echapper(Joueurs.dernierNom())}">
+        <input class="champ" name="nom" maxlength="20" required value="${echapper(Resultats.dernierNom())}">
       </label>
       <button class="btn btn-principal" type="submit">C'est parti !</button>
-    </form>
-    ${tableauScores(jeu)}`;
+    </form>`;
   conteneur.querySelector("form").addEventListener("submit", (e) => {
     e.preventDefault();
     const nom = e.target.nom.value.trim();
     if (!nom) return;
-    Joueurs.memoriser(nom);
+    Resultats.memoriserNom(nom);
     auDepart(nom);
   });
 }
@@ -292,11 +232,13 @@ function lancerQuiz(conteneur, questions, jeu) {
   let index = 0;
   let score = 0;
   let joueur = "";
+  let reponses = [];
 
   function commencer(nom) {
     joueur = nom;
     index = 0;
     score = 0;
+    reponses = [];
     afficherQuestion();
   }
 
@@ -317,6 +259,12 @@ function lancerQuiz(conteneur, questions, jeu) {
     boutons[bonne].classList.add("juste");
     if (i === bonne) score++;
     else boutons[i].classList.add("faux");
+    reponses.push({
+      question: questions[index].q,
+      choisie: questions[index].choix[i],
+      bonne: questions[index].choix[bonne],
+      juste: i === bonne,
+    });
 
     const suite = conteneur.querySelector(".quiz-suite");
     const derniere = index === questions.length - 1;
@@ -330,8 +278,15 @@ function lancerQuiz(conteneur, questions, jeu) {
   }
 
   function afficherFin() {
-    const entree = { id: Date.now(), nom: joueur, points: score, total: questions.length };
-    Joueurs.ajouter(jeu, entree);
+    Resultats.ajouter({
+      id: Date.now() + "-" + Math.random().toString(36).slice(2, 7),
+      jeu,
+      nom: joueur,
+      date: new Date().toISOString(),
+      points: score,
+      total: questions.length,
+      reponses,
+    });
     const ratio = score / questions.length;
     const bilan =
       ratio === 1 ? "parfait, tu es un·e expert·e ! 🏆" :
@@ -343,8 +298,7 @@ function lancerQuiz(conteneur, questions, jeu) {
       <div class="boutons">
         <button class="btn btn-principal" data-action="rejouer">Rejouer</button>
         <button class="btn btn-secondaire" data-action="changer">Changer de joueur</button>
-      </div>
-      ${tableauScores(jeu, entree.id)}`;
+      </div>`;
     conteneur.querySelector('[data-action="rejouer"]').addEventListener("click", () => commencer(joueur));
     conteneur.querySelector('[data-action="changer"]').addEventListener("click", () => demanderNom(conteneur, jeu, commencer));
   }
@@ -435,10 +389,10 @@ document.querySelectorAll(".quiz").forEach((el) => lancerQuiz(el, QUIZ[el.datase
   const accueil = document.getElementById("lettre-accueil");
   const zoneJeu = document.getElementById("lettre-jeu");
   const barre = document.getElementById("lettre-barre");
-  const classement = document.getElementById("lettre-classement");
   let ordre = [];
   let joueur = "";
   let essais = 0;
+  let tentatives = [];
   let termine = false;
 
   function commencer(nom) {
@@ -462,8 +416,8 @@ document.querySelectorAll(".quiz").forEach((el) => lancerQuiz(el, QUIZ[el.datase
       }
     } while (ordre.every((v, i) => v === i));
     essais = 0;
+    tentatives = [];
     termine = false;
-    classement.innerHTML = "";
     afficherMessage(messageEl, "");
     dessiner();
   }
@@ -493,14 +447,21 @@ document.querySelectorAll(".quiz").forEach((el) => lancerQuiz(el, QUIZ[el.datase
     if (termine) return;
     essais++;
     const bienPlaces = ordre.filter((b, pos) => b === pos).length;
+    tentatives.push(bienPlaces);
     dessiner(true);
     if (bienPlaces === BLOCS.length) {
       termine = true;
-      const entree = { id: Date.now(), nom: joueur, essais };
-      Joueurs.ajouter("lettre", entree);
+      Resultats.ajouter({
+        id: Date.now() + "-" + Math.random().toString(36).slice(2, 7),
+        jeu: "lettre",
+        nom: joueur,
+        date: new Date().toISOString(),
+        essais,
+        total: BLOCS.length,
+        tentatives,
+      });
       afficherMessage(messageEl,
         `Bravo ${joueur}, ta lettre est parfaitement construite en ${essais} essai${essais > 1 ? "s" : ""} ! 🎉`, "bravo");
-      classement.innerHTML = tableauScores("lettre", entree.id);
     } else {
       afficherMessage(messageEl, `${bienPlaces} / ${BLOCS.length} blocs bien placés. Les blocs en rose sont à déplacer.`, "oups");
     }

@@ -1,0 +1,82 @@
+/* ==========================================================
+   Espace animateur
+   ========================================================== */
+.admin { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+.badge-admin { font-weight: 800; color: var(--texte-doux); }
+.btn-petit { padding: .45rem 1rem; font-size: .95rem; box-shadow: 0 3px 0 var(--texte); }
+
+.connexion {
+  max-width: 420px; margin: 3rem auto; background: var(--blanc); border: 3px solid var(--texte);
+  border-radius: var(--rayon); padding: 1.5rem; box-shadow: var(--ombre);
+}
+.connexion h1 { margin-top: 0; font-size: 1.6rem; }
+
+.admin-tete { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; }
+.admin-tete h1 { margin: 0; }
+.admin-tete .boutons { margin: 0; }
+
+.chiffres { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+.chiffre {
+  background: var(--blanc); border: 3px solid var(--texte); border-radius: var(--rayon);
+  padding: .8rem 1rem; box-shadow: var(--ombre);
+}
+.chiffre strong { display: block; font-size: 1.8rem; color: var(--violet); line-height: 1.1; }
+.chiffre span { color: var(--texte-doux); font-weight: 700; font-size: .9rem; }
+
+.filtres { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
+.filtres label { display: grid; gap: .2rem; font-weight: 800; flex: 1 1 220px; }
+.filtres input, .filtres select {
+  font: inherit; padding: .5rem .7rem; border: 3px solid var(--texte); border-radius: 10px; background: var(--blanc);
+}
+
+.ratees {
+  background: #fff6d6; border: 3px solid var(--texte); border-radius: var(--rayon);
+  padding: 1rem 1.3rem; margin-bottom: 1.5rem;
+}
+.ratees h2 { font-size: 1.15rem; margin: 0 0 .5rem; text-align: left; }
+.ratees ol { margin: 0; padding-left: 1.3rem; }
+.ratees li { margin-bottom: .3rem; }
+.ratees .taux { font-weight: 800; color: #c62f5d; }
+
+.joueurs { display: grid; gap: 1.2rem; }
+.vide-admin { text-align: center; color: var(--texte-doux); padding: 2rem; }
+.joueur-carte {
+  background: var(--blanc); border: 3px solid var(--texte); border-radius: var(--rayon);
+  padding: 1rem 1.3rem; box-shadow: var(--ombre);
+}
+.joueur-carte > h2 { font-size: 1.3rem; margin: 0 0 .6rem; text-align: left; display: flex; gap: .6rem; align-items: baseline; flex-wrap: wrap; }
+.joueur-carte > h2 small { font-size: .9rem; color: var(--texte-doux); font-weight: 700; }
+
+.partie { border-top: 2px solid var(--bleu-ciel); }
+.partie summary {
+  display: grid; grid-template-columns: 9rem 1fr auto auto; gap: 1rem; align-items: center;
+  padding: .6rem .2rem; cursor: pointer; list-style: none;
+}
+.partie summary::-webkit-details-marker { display: none; }
+.partie summary::after { content: "Voir le test ▾"; color: var(--violet-fonce); font-weight: 700; font-size: .9rem; }
+.partie[open] summary::after { content: "Masquer ▴"; }
+.partie .date { color: var(--texte-doux); font-size: .9rem; }
+.partie .jeu-nom { font-weight: 700; }
+.note {
+  font-weight: 800; padding: .15rem .7rem; border-radius: 999px; white-space: nowrap;
+  border: 2px solid var(--texte);
+}
+.note.bon { background: #d8f6ee; }
+.note.moyen { background: #fff1c2; }
+.note.faible { background: #ffe1ea; }
+
+.detail { padding: .3rem 0 1rem; }
+.detail ol { margin: 0; padding-left: 1.4rem; display: grid; gap: .6rem; }
+.detail .q { font-weight: 700; }
+.detail .rep { margin: .1rem 0 0; }
+.detail .juste { color: #13896d; }
+.detail .faux { color: #c62f5d; }
+.detail .actions-partie { text-align: right; margin-top: .6rem; }
+.lien { background: none; border: 0; font: inherit; color: var(--violet-fonce); cursor: pointer; text-decoration: underline; padding: 0; }
+.lien.danger { color: #c62f5d; }
+
+@media (max-width: 700px) {
+  .partie summary { grid-template-columns: 1fr auto; }
+  .partie summary .date { grid-column: 1 / -1; }
+  .partie summary::after { grid-column: 1 / -1; }
+}

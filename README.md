@@ -31,10 +31,25 @@ Site de présentation d'un atelier numérique ludique pour les jeunes (le nom «
 Une alerte prévient si le CV dépasse une page. Les données restent dans le navigateur
 de l'utilisateur (rien n'est envoyé sur Internet) et sont retrouvées à la visite suivante.
 
-Avant chaque jeu, le joueur entre son **prénom ou pseudo**. À la fin, son résultat est ajouté
-au **tableau des scores** du jeu (top 10 ; les quiz sont classés par score, la lettre par nombre
-d'essais). Les scores restent sur l'ordinateur utilisé et peuvent être effacés avec le lien
-« Effacer les scores ».
+Avant chaque jeu, le joueur entre son **prénom ou pseudo**. Chaque partie terminée est
+enregistrée avec le détail des réponses, consultable dans l'espace animateur.
+
+## Espace animateur (`admin.html`)
+
+Accessible par le lien « 🔒 Espace animateur » en bas de la page d'accueil.
+
+- **Mot de passe par défaut : `animateur2026`** — à changer dans `js/admin.js`
+  (remplacer `EMPREINTE_MDP` par l'empreinte SHA-256 du nouveau mot de passe).
+- Chiffres clés, recherche par prénom, filtre par jeu.
+- Une fiche par joueur : chaque partie avec sa date, son résultat et **le détail du test**
+  (réponse donnée, bonne réponse ; pour la lettre, le résultat de chaque essai).
+- Les questions les plus ratées, pour savoir quoi réexpliquer.
+- Export **CSV** (s'ouvre dans Excel), suppression d'une partie ou de tout.
+
+⚠️ Limites de cette version sans serveur : les résultats restent dans le navigateur de
+**l'ordinateur où l'on a joué**, et le mot de passe n'est qu'une protection légère
+(quelqu'un qui s'y connaît pourrait lire les données). Pour rassembler les résultats de
+plusieurs postes avec une vraie sécurité, il faudra un hébergement avec une base de données.
 
 Les questions se modifient facilement dans `js/main.js` (objet `QUIZ`).
 
@@ -47,9 +62,13 @@ Aucune installation : ouvrir `index.html` dans un navigateur.
 ```
 index.html     page d'accueil, programme, mini-jeux
 cv.html        créateur de CV
+admin.html     espace animateur (résultats des joueurs)
 css/style.css  styles communs
 css/cv.css     styles du créateur de CV et des 3 modèles
+css/admin.css  styles de l'espace animateur
+js/resultats.js enregistrement des résultats (partagé site / admin)
 js/main.js     menu, onglets, quiz et mini-jeux
+js/admin.js    espace animateur
 js/cv.js       créateur de CV
 ```
 

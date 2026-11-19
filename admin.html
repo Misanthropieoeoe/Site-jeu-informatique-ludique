@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Espace animateur — Clic &amp; Avenir</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <header class="entete">
+    <nav class="nav">
+      <a href="index.html" class="logo">🚀 Clic &amp; Avenir</a>
+      <span class="badge-admin">🔒 Espace animateur</span>
+    </nav>
+  </header>
+
+  <main class="admin">
+    <!-- Connexion -->
+    <section id="connexion" class="connexion">
+      <h1>🔒 Espace animateur</h1>
+      <p>Connecte-toi pour voir les résultats et les réponses de chaque joueur.</p>
+      <form id="form-connexion" class="formulaire">
+        <label>Mot de passe <input type="password" name="mdp" required autocomplete="current-password"></label>
+        <button class="btn btn-principal" type="submit">Se connecter</button>
+        <p class="message" id="connexion-message" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <!-- Tableau de bord -->
+    <section id="tableau" hidden>
+      <div class="admin-tete">
+        <h1>Résultats des joueurs</h1>
+        <div class="boutons">
+          <button class="btn btn-secondaire btn-petit" id="exporter">⬇ Exporter (Excel / CSV)</button>
+          <button class="btn btn-secondaire btn-petit" id="tout-effacer">🗑 Tout effacer</button>
+          <button class="btn btn-secondaire btn-petit" id="deconnexion">Se déconnecter</button>
+        </div>
+      </div>
+
+      <div class="chiffres" id="chiffres"></div>
+
+      <div class="filtres">
+        <label>🔎 Joueur <input type="search" id="filtre-nom" placeholder="Rechercher un prénom"></label>
+        <label>🎮 Jeu
+          <select id="filtre-jeu"><option value="">Tous les jeux</option></select>
+        </label>
+      </div>
+
+      <div id="questions-ratees"></div>
+      <div id="joueurs" class="joueurs"></div>
+    </section>
+  </main>
+
+  <script src="js/resultats.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
